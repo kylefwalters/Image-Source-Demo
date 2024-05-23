@@ -62,8 +62,7 @@ sysinfo.txt
 *.app
 
 # Build files in vcxproj
-/ImageSourceSpatializer/x86/*
-/ImageSourceSpatializer/x64/*
+/ImageSourceSpatializer/ImageSourceSpatializer/x64
 
 # Crashlytics generated file
 crashlytics-build.properties
