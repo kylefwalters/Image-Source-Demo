@@ -151,6 +151,7 @@
   <ItemGroup>
     <ClCompile Include="AudioPluginUtil.cpp" />
     <ClCompile Include="hrtftable.cpp" />
+    <ClCompile Include="ImageSourceSpatializer.cpp" />
     <ClCompile Include="Plugin_SpatializerReverb.cpp" />
     <ClCompile Include="Plugin_Spatializer.cpp" />
     <ClCompile Include="pch.cpp">

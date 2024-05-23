@@ -50,5 +50,8 @@
     <ClCompile Include="Plugin_SpatializerReverb.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="ImageSourceSpatializer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
