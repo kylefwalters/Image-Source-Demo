@@ -1,4 +1,3 @@
-using System.Runtime.InteropServices;
 using UnityEngine;
 
 public class Test : MonoBehaviour
@@ -22,7 +21,7 @@ public class Test : MonoBehaviour
         Vector3 direction = player.transform.position - transform.position;
         RaycastHit hitInfo = new();
         Physics.Raycast(transform.position, direction.normalized, out hitInfo, direction.magnitude);
-        float spatialVolume = hitInfo.collider.gameObject == player ? 1 : 0;
+        float spatialVolume = hitInfo.collider?.gameObject == player ? 1 : 0.5f;
         bool successful = _audioSource.SetSpatializerFloat(0, spatialVolume);
     }
 }
