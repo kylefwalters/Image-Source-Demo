@@ -18,7 +18,7 @@ namespace ImageSourceSpatializer
 	{
         int numparams = P_NUMBER;
         definition.paramdefs = new UnityAudioParameterDefinition[numparams];
-        AudioPluginUtil::RegisterParameter(definition, "Player Can Hear", "", 0.0f, 1.0f, 1.0f, 1.0f, 1.0f, CANHEAR, "Listener has direct line to audio source");
+        AudioPluginUtil::RegisterParameter(definition, "Player Can Hear", "", 0.0f, 1.0f, 0.0f, 1.0f, 1.0f, CANHEAR, "Listener has direct line to audio source");
         definition.flags |= UnityAudioEffectDefinitionFlags_IsSpatializer;
         return numparams;
 	}
