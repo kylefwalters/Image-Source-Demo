@@ -27,6 +27,6 @@ public class AudioOcclusion : MonoBehaviour
         RaycastHit hitInfo = new();
         Physics.Raycast(transform.position, direction.normalized, out hitInfo, direction.magnitude);
         float spatialVolume = hitInfo.collider?.gameObject == player ? 1 : _muffledVolume;
-        bool successful = _audioSource.SetSpatializerFloat(0, spatialVolume);
+        _audioSource.SetSpatializerFloat(0, spatialVolume);
     }
 }

@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
@@ -16,7 +15,7 @@ public class ImageSourceSpatializer : MonoBehaviour
 
     [Tooltip("Number of times sound can reflect off an object")]
     [SerializeField, Range(0, 5)]
-    private int _reflectionCount = 3;
+    private int _reflectionLimit = 3;
 
     [Tooltip("Volume falloff per reflection")]
     [SerializeField, Range(0.01f, 1.0f)]
@@ -40,20 +39,42 @@ public class ImageSourceSpatializer : MonoBehaviour
 
         //TODO: Run performance test to see if this is faster than running GetObjectsInRadius for each recursive call
         Collider[] colliders = GetObjectsInRadius(_audioSource.maxDistance);
+        _audioSource.SetSpatializerFloat(0, 0);
+        ImageSourceReflection(colliders, _audioSource.transform.position, _audioSource.maxDistance);
     }
 
-    private void ImageSourceReflection(int currentReflection, Collider[] colliders, Vector3 currentPos, float radius)
+    private void ImageSourceReflection(Collider[] colliders, Vector3 currentPos, float radius, int currentReflection = 0)
     {
 
-        if(currentReflection == _reflectionCount)
+        if (currentReflection == _reflectionLimit)
         { return; }
 
+        // TODO: Run LoS check and account for limited access, diffraction, or no access
+        // TODO: run this for every face in collider
         foreach (Collider collider in colliders)
         {
             Vector3 ImagesSourcePos;
             float newRadius;
             //ImageSourceReflection(currentReflection + 1, colliders, ImagesSourcePos, newRadius);
         }
+
+        if(PlayerCanHear(currentPos, radius))
+        {
+            // TODO: set up utility class for spatializer floats
+            _audioSource.GetSpatializerFloat(0, out float currentVolume);
+            float additionalVolume = Mathf.Pow(1/(currentReflection + 1), 2);
+            currentVolume = Mathf.Min(currentVolume + additionalVolume, 1.0f);
+            _audioSource.SetSpatializerFloat(0, currentVolume);
+        }
+    }
+
+    private bool PlayerCanHear(Vector3 currentPos, float radius)
+    {
+        Vector3 targetPos = Camera.main.transform.position;
+        Vector3 direction = targetPos - currentPos;
+        
+        bool canHear = Physics.Raycast(currentPos, direction.normalized, out RaycastHit hitInfo, radius) && hitInfo.collider.gameObject == Camera.main.gameObject;
+        return canHear;
     }
 
     private Collider[] GetObjectsInRadius(float radius)
