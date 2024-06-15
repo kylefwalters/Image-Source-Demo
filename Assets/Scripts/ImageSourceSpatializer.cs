@@ -25,6 +25,10 @@ public class ImageSourceSpatializer : MonoBehaviour
     [SerializeField, Range(0.01f, 1.0f)]
     private float _reverbScalar = 1.0f;
 
+    [Tooltip("Max angle a face can have relative to audio/reverb source")]
+    [SerializeField, Range(0.0f, 90.0f)]
+    private float angleThreshold = 90.0f;
+
     private void FixedUpdate()
     {
         UpdateAudio();
@@ -39,7 +43,7 @@ public class ImageSourceSpatializer : MonoBehaviour
 
         //TODO: Run performance test to see if this is faster than running GetObjectsInRadius for each recursive call
         Collider[] colliders = GetObjectsInRadius(_audioSource.maxDistance);
-        _audioSource.SetSpatializerFloat(0, 0);
+        _audioSource.SetSpatializerFloat(0, 0.4f);
         ImageSourceReflection(colliders, _audioSource.transform.position, _audioSource.maxDistance);
     }
 
@@ -51,11 +55,18 @@ public class ImageSourceSpatializer : MonoBehaviour
 
         // TODO: Run LoS check and account for limited access, diffraction, or no access
         // TODO: run this for every face in collider
+        //      getting the faces of a collider will require calculating them in the case of non-mesh colliders,
+        //      faces can be returned as Planes, use .ClosestPointOnPlane then constrain result to dimensions of face
         foreach (Collider collider in colliders)
         {
-            Vector3 ImagesSourcePos;
-            float newRadius;
-            //ImageSourceReflection(currentReflection + 1, colliders, ImagesSourcePos, newRadius);
+            Vector3 collisionPoint = collider.ClosestPoint(currentPos);
+            //if (angle >= angleThreshold)
+            //    continue;
+
+            Vector3 dir = collisionPoint - currentPos;
+            Vector3 ImagesSourcePos = collisionPoint + dir;
+            float newRadius = radius - dir.magnitude;
+            ImageSourceReflection(colliders, ImagesSourcePos, newRadius, currentReflection + 1);
         }
 
         if(PlayerCanHear(currentPos, radius))
