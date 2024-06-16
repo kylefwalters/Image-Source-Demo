@@ -74,7 +74,6 @@ namespace Audio.Spatializer
 
             if (PlayerCanHear(currentPos, radius))
             {
-                // TODO: set up utility class for spatializer floats
                 float currentVolume;
                 SpatializerUtils.GetSpatializerFloat(_audioSource, SpatializerIndex.VOLUME, out currentVolume);
                 float additionalVolume = Mathf.Pow(1 / (currentReflection + 1), 2);
