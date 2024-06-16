@@ -46,7 +46,7 @@ namespace Audio.Spatializer
 
             //TODO: Run performance test to see if this is faster than running GetObjectsInRadius for each recursive call
             Collider[] colliders = GetObjectsInRadius(_audioSource.maxDistance);
-            SpatializerUtils.SetSpatializerFloat(_audioSource, SpatializerVars.VOLUME, 0.4f);
+            SpatializerUtils.SetSpatializerFloat(_audioSource, SpatializerIndex.VOLUME, 0.4f);
             ImageSourceReflection(colliders, _audioSource.transform.position, _audioSource.maxDistance);
         }
 
@@ -75,10 +75,11 @@ namespace Audio.Spatializer
             if (PlayerCanHear(currentPos, radius))
             {
                 // TODO: set up utility class for spatializer floats
-                _audioSource.GetSpatializerFloat(0, out float currentVolume);
+                float currentVolume;
+                SpatializerUtils.GetSpatializerFloat(_audioSource, SpatializerIndex.VOLUME, out currentVolume);
                 float additionalVolume = Mathf.Pow(1 / (currentReflection + 1), 2);
                 currentVolume = Mathf.Min(currentVolume + additionalVolume, 1.0f);
-                SpatializerUtils.SetSpatializerFloat(_audioSource, SpatializerVars.VOLUME, currentVolume);
+                SpatializerUtils.SetSpatializerFloat(_audioSource, SpatializerIndex.VOLUME, currentVolume);
             }
         }
 
