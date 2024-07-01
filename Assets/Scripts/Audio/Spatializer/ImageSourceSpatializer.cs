@@ -62,13 +62,17 @@ namespace Audio.Spatializer
             //      faces can be returned as Planes, use .ClosestPointOnPlane then constrain result to dimensions of face
             foreach (Collider collider in colliders)
             {
-                Vector3 collisionPoint = collider.ClosestPoint(currentPos);
+                //float angle = Quaternion.Angle();
                 //if (angle >= angleThreshold)
                 //    continue;
+
+                Vector3 collisionPoint = collider.ClosestPoint(currentPos);
 
                 Vector3 dir = collisionPoint - currentPos;
                 Vector3 ImagesSourcePos = collisionPoint + dir;
                 float newRadius = radius - dir.magnitude;
+                // TODO: Treat reflected sound as a beam, find way to tell if collider intersects with the beam
+                // TODO: Check that beam is not obstructed by other colliders
                 ImageSourceReflection(colliders, ImagesSourcePos, newRadius, currentReflection + 1);
             }
 

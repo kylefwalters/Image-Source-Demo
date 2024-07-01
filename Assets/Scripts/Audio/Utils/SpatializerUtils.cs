@@ -1,3 +1,4 @@
+using JetBrains.Annotations;
 using UnityEngine;
 
 namespace Audio.Utils
@@ -42,11 +43,11 @@ namespace Audio.Utils
 
             switch (collider)
             {
-                case BoxCollider:
-                    colliderFaces = GetBoxColliderFaces(collider);
-                    break;
                 case SphereCollider:
                     colliderFaces = GetSphereColliderFaces(collider);
+                    break;
+                case BoxCollider:
+                    colliderFaces = GetBoxColliderFaces(collider);
                     break;
                 case MeshCollider:
                     colliderFaces = GetMeshColliderFaces(collider);
@@ -56,32 +57,64 @@ namespace Audio.Utils
             return colliderFaces;
         }
 
+        private static ColliderFace[] GetSphereColliderFaces(Collider collider)
+        {
+            return null;
+        }
+
         private static ColliderFace[] GetBoxColliderFaces(Collider collider)
         {
             BoxCollider boxCollider = (BoxCollider)collider;
-            Vector3[] vertices = new Vector3[36];
-            Vector3 center = boxCollider.transform.localToWorldMatrix * boxCollider.center;
 
-            // TODO: turn into reusable method
-            // Top
-            vertices[0] = center + new Vector3(-boxCollider.size.x, boxCollider.size.y, -boxCollider.size.z);
-            vertices[1] = center + new Vector3(boxCollider.size.x, boxCollider.size.y, -boxCollider.size.z);
-            vertices[2] = center + new Vector3(-boxCollider.size.x, boxCollider.size.y, boxCollider.size.z);
-            vertices[3] = center + new Vector3(-boxCollider.size.x, boxCollider.size.y, boxCollider.size.z);
-            vertices[4] = center + new Vector3(boxCollider.size.x, boxCollider.size.y, -boxCollider.size.z);
-            vertices[5] = center + new Vector3(boxCollider.size.x, boxCollider.size.y, boxCollider.size.z);
-            //for (int i = 0; i < 6; i++)
-            //{
-            //    int index = i * 6;
-            //    vertices[i] = ;
-            //}
+            Vector3[] vertices = GetBoxVertices(boxCollider);
 
             return GetColliderFaces(vertices);
         }
 
-        private static ColliderFace[] GetSphereColliderFaces(Collider collider)
-        {
-            return null;
+        private static Vector3[] GetBoxVertices(BoxCollider boxCollider)
+        { 
+            Vector3[] sideOffset = {
+                new Vector3(1,0,0),
+                new Vector3(-1,0,0),
+                new Vector3(0,1,0),
+                new Vector3(0,-1,0),
+                new Vector3(0,0,1),
+                new Vector3(0,0,-1)
+            };
+            Vector3[] sideVertices = {
+                new Vector3(-boxCollider.size.x, 0, -boxCollider.size.z),
+                new Vector3(boxCollider.size.x, 0, -boxCollider.size.z),
+                new Vector3(-boxCollider.size.x, 0, boxCollider.size.z),
+                new Vector3(-boxCollider.size.x, 0, boxCollider.size.z),
+                new Vector3(boxCollider.size.x, 0, -boxCollider.size.z),
+                new Vector3(boxCollider.size.x, 0, boxCollider.size.z)
+            };
+            Quaternion[] sideRotations = {
+                Quaternion.AngleAxis(90, Vector3.forward),
+                Quaternion.AngleAxis(-90, Vector3.forward),
+                Quaternion.AngleAxis(0, Vector3.forward),
+                Quaternion.AngleAxis(180, Vector3.forward),
+                Quaternion.AngleAxis(90, Vector3.right),
+                Quaternion.AngleAxis(-90, Vector3.right),
+            };
+            Vector3 center = boxCollider.transform.localToWorldMatrix * boxCollider.center;
+
+            Vector3[] boxVertices = new Vector3[36];
+
+            for(int sideIndex = 0; sideIndex < 6; sideIndex++)
+            {
+                for(int vertexIndex = 0; vertexIndex < 6; vertexIndex++)
+                {
+                    Quaternion localRotation = boxCollider.transform.rotation;
+                    Vector3 vertexDirection = sideVertices[vertexIndex] - center;
+                    vertexDirection = localRotation * sideRotations[sideIndex] * vertexDirection;
+
+                    boxVertices[sideIndex * 6 + vertexIndex] = 
+                        center + sideOffset[sideIndex] + vertexDirection;
+                }
+            }
+
+            return boxVertices;
         }
 
         private static ColliderFace[] GetMeshColliderFaces(Collider collider)
